@@ -1,0 +1,87 @@
+import React, { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Copy } from 'lucide-react';
+
+export default function IndentFormatter() {
+  const [inputText, setInputText] = useState('');
+  const [spaces, setSpaces] = useState('4');
+  const [outputText, setOutputText] = useState('');
+
+  const handleProcess = () => {
+    const lines = inputText.split('\n');
+    const indentedLines = lines.map(line => {
+      return ' '.repeat(Number(spaces)) + line;
+    });
+    setOutputText(indentedLines.join('\n'));
+  };
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(outputText);
+    } catch (err) {
+      console.error('Failed to copy text:', err);
+    }
+  };
+
+  return (
+    <div className="w-full max-w-4xl mx-auto p-4 space-y-4">
+      <Card className="p-4">
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium mb-2">
+              入力テキスト
+            </label>
+            <textarea
+              value={inputText}
+              onChange={(e) => setInputText(e.target.value)}
+              className="w-full h-40 p-2 border rounded-md"
+              placeholder="ここにテキストを入力してください"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">
+              スペースの数
+            </label>
+            <input
+              type="number"
+              value={spaces}
+              onChange={(e) => setSpaces(e.target.value)}
+              className="w-24 p-2 border rounded-md"
+              min="0"
+            />
+          </div>
+
+          <Button
+            onClick={handleProcess}
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          >
+            実行
+          </Button>
+
+          <div>
+            <div className="flex justify-between items-center mb-2">
+              <label className="block text-sm font-medium">
+                出力テキスト
+              </label>
+              <Button
+                onClick={handleCopy}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <Copy className="w-4 h-4" />
+                コピー
+              </Button>
+            </div>
+            <textarea
+              value={outputText}
+              readOnly
+              className="w-full h-40 p-2 border rounded-md bg-gray-50"
+            />
+          </div>
+        </div>
+      </Card>
+    </div>
+  );
+}
